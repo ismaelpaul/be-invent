@@ -2,6 +2,9 @@ const asyncHandler = require('express-async-handler');
 const User = require('../models/user.models');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const Token = require('../models/token.models');
+const crypto = require('crypto');
+const { sendEmail } = require('../utils/sendEmail');
 
 const generateToken = (id) => {
 	return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '1d' });
@@ -105,7 +108,7 @@ exports.logoutUser = asyncHandler(async (req, res) => {
 		sameSite: 'none',
 		secure: true,
 	});
-	return res.status(200).json({ message: 'Logged out succesfully' });
+	return res.status(200).json({ message: 'Logged out successfully' });
 });
 
 exports.getUser = asyncHandler(async (req, res) => {
@@ -158,5 +161,91 @@ exports.updateUser = asyncHandler(async (req, res) => {
 	} else {
 		res.status(404);
 		throw new Error('User not found');
+	}
+});
+
+exports.updatePassword = asyncHandler(async (req, res) => {
+	const user = await User.findById(req.user._id);
+
+	const { oldPassword, password } = req.body;
+
+	if (!user) {
+		res.status(400);
+		throw new Error('User not found, please sign up');
+	}
+
+	if (!oldPassword || !password) {
+		res.status(400);
+		throw new Error('Please add old and new password');
+	}
+
+	const passwordIsCorrect = await bcrypt.compare(oldPassword, user.password);
+
+	if (user && passwordIsCorrect) {
+		user.password = password;
+		await user.save();
+		res.status(200).send('Password was changed successfully');
+	} else {
+		res.status(400);
+		throw new Error('Old password is incorrect');
+	}
+});
+
+exports.forgotPassword = asyncHandler(async (req, res) => {
+	const { email } = req.body;
+	const userExists = await User.findOne({ email });
+
+	if (!userExists) {
+		res.status(404);
+		throw new Error('User does not exist');
+	}
+
+	// Delete token if it exists in DB
+	let token = await Token.findOne({ userId: userExists._id });
+	if (token) {
+		await Token.deleteOne();
+	}
+
+	// Reset token
+	let resetToken = crypto.randomBytes(32).toString('hex') + userExists._id;
+
+	// Hash token before saving to DB
+	const hashedToken = crypto
+		.createHash('sha256')
+		.update(resetToken)
+		.digest('hex');
+
+	await new Token({
+		userId: userExists._id,
+		token: hashedToken,
+		createdAt: Date.now(),
+		expiresAt: Date.now() + 30 * (60 * 1000), //30 mins
+	}).save();
+
+	const resetUrl = `${process.env.CLIENT_URL}/reset-passowrd/${resetToken}`;
+
+	const message = `
+		<h2>Hello ${userExists.name},</h2>
+		<p>Please use the url below to reset your password.</p>
+		<p>The reset link is valid for only 30 minutes.</p>
+
+
+		<a href=${resetUrl} clicktracking=off>${resetUrl}</a>
+
+		<p>Kind regards,</p>
+
+		<p>Invetário App Team</p>
+	`;
+
+	const subject = '(No Reply) Password Reset Request';
+	const send_to = userExists.email;
+	const sent_from = process.env.EMAIL_USER;
+
+	try {
+		await sendEmail(subject, message, send_to, sent_from);
+		res.status(200).json({ sucess: true, message: 'Reset email sent' });
+	} catch (error) {
+		res.status(500);
+		throw new Error('Email not sent, please try again.');
 	}
 });
