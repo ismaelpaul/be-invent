@@ -134,3 +134,29 @@ exports.loggedinUser = asyncHandler(async (req, res) => {
 	}
 	return res.json(false);
 });
+
+exports.updateUser = asyncHandler(async (req, res) => {
+	const user = await User.findById(req.user._id);
+
+	if (user) {
+		const { name, email, picture, phone, bio } = user;
+		user.email = email;
+		user.name = req.body.name || name;
+		user.picture = req.body.picture || picture;
+		user.phone = req.body.phone || phone;
+		user.bio = req.body.bio || bio;
+
+		const updateUser = await user.save();
+		res.status(200).json({
+			_id: updateUser._id,
+			name: updateUser.name,
+			email: updateUser.email,
+			picture: updateUser.picture,
+			phone: updateUser.phone,
+			bio: updateUser.bio,
+		});
+	} else {
+		res.status(404);
+		throw new Error('User not found');
+	}
+});
