@@ -96,3 +96,41 @@ exports.loginUser = asyncHandler(async (req, res) => {
 		throw new Error('Invalid email or password');
 	}
 });
+
+exports.logoutUser = asyncHandler(async (req, res) => {
+	res.cookie('token', '', {
+		path: '/',
+		httpOnly: true,
+		expires: new Date(0), // expires cookie
+		sameSite: 'none',
+		secure: true,
+	});
+	return res.status(200).json({ message: 'Logged out succesfully' });
+});
+
+exports.getUser = asyncHandler(async (req, res) => {
+	const user = await User.findById(req.user._id);
+
+	if (user) {
+		const { _id, name, email, picture, phone, bio } = user;
+
+		res.status(200).json({ _id, name, email, picture, phone, bio });
+	} else {
+		throw new Error('User not found');
+	}
+});
+
+exports.loggedinUser = asyncHandler(async (req, res) => {
+	const token = req.cookies.token;
+
+	if (!token) {
+		return res.json(false);
+	}
+
+	const verified = jwt.verify(token, process.env.JWT_SECRET);
+
+	if (verified) {
+		return res.json(true);
+	}
+	return res.json(false);
+});
