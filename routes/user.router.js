@@ -8,6 +8,7 @@ const {
 	updateUser,
 	updatePassword,
 	forgotPassword,
+	resetPassword,
 } = require('../controllers/user.controllers');
 const { protect } = require('../middleware/auth.middleware');
 
@@ -21,5 +22,6 @@ userRouter.get('/loggedin', loggedinUser);
 userRouter.patch('/update-profile', protect, updateUser);
 userRouter.patch('/update-password', protect, updatePassword);
 userRouter.post('/forgot-password', forgotPassword);
+userRouter.put('/reset-password/:resetToken', resetPassword);
 
 module.exports = userRouter;
