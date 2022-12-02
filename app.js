@@ -4,11 +4,14 @@ const cors = require('cors');
 const apiRouter = require('./routes/api.router');
 const errorHandler = require('./middleware/error.middleware');
 const cookieParser = require('cookie-parser');
+const path = require('path');
 
 const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Route
 app.use('/api', apiRouter);
