@@ -10,6 +10,12 @@ const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(
+	cors({
+		origin: ['http://localhost:5173', 'http://invent-app.vercel.app'],
+		credentials: true,
+	})
+);
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
