@@ -223,7 +223,7 @@ exports.forgotPassword = asyncHandler(async (req, res) => {
 		expiresAt: Date.now() + 30 * (60 * 1000), //30 mins
 	}).save();
 
-	const resetUrl = `${process.env.CLIENT_URL}/reset-passowrd/${resetToken}`;
+	const resetUrl = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
 
 	const message = `
 		<h2>Hello ${userExists.name},</h2>
@@ -244,7 +244,7 @@ exports.forgotPassword = asyncHandler(async (req, res) => {
 
 	try {
 		await sendEmail(subject, message, send_to, sent_from);
-		res.status(200).json({ sucess: true, message: 'Reset email sent' });
+		res.status(200).json({ sucess: true, message: 'Reset email sent.' });
 	} catch (error) {
 		res.status(500);
 		throw new Error('Email not sent, please try again.');
