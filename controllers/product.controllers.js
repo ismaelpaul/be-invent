@@ -69,6 +69,7 @@ exports.getSingleProduct = asyncHandler(async (req, res) => {
 
 exports.deleteProduct = asyncHandler(async (req, res) => {
 	const singleProduct = await Product.findById(req.params.id);
+	const { id } = req.params;
 
 	if (!singleProduct) {
 		res.status(404);
@@ -78,7 +79,7 @@ exports.deleteProduct = asyncHandler(async (req, res) => {
 		res.status(401);
 		throw new Error('User not authorized');
 	}
-	await Product.deleteOne();
+	await Product.deleteOne({ _id: id });
 	res.status(200).json({ message: 'Product deleted successfully' });
 });
 
@@ -120,7 +121,6 @@ exports.updateProduct = asyncHandler(async (req, res) => {
 			fileSize: fileSizeFormatter(req.file.size, 2),
 		};
 	}
-
 	const updatedProduct = await Product.findByIdAndUpdate(
 		{ _id: id },
 		{
