@@ -13,7 +13,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(
 	cors({
-		origin: ['http://localhost:5173', 'http://invent-app.vercel.app'],
+		origin: ['http://localhost:5173', 'https://invent-app.netlify.app/'],
 		credentials: true,
 	})
 );
