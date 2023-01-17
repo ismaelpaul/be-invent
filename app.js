@@ -8,15 +8,21 @@ const path = require('path');
 
 const app = express();
 
+const whitelist = ['http://localhost:5173', 'https://invent-app.netlify.app'];
+const corsOptions = {
+	origin: function (origin, callback) {
+		if (whitelist.indexOf(origin) !== -1) {
+			callback(null, true);
+		} else {
+			callback(new Error('Not allowed by CORS'));
+		}
+	},
+};
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(
-	cors({
-		origin: ['http://localhost:5173', 'https://invent-app.netlify.app/'],
-		credentials: true,
-	})
-);
+app.use(cors(corsOptions));
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
