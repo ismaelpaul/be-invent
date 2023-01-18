@@ -8,7 +8,10 @@ const path = require('path');
 
 const app = express();
 
-const whitelist = ['http://localhost:5173', 'https://invent-app.netlify.app'];
+const whitelist = [
+	'http://localhost:5173',
+	'https://invent-app-ismaelpaul.vercel.app',
+];
 const corsOptions = {
 	origin: function (origin, callback) {
 		if (whitelist.indexOf(origin) !== -1) {
