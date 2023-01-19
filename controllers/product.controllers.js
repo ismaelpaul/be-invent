@@ -2,6 +2,7 @@ const asyncHandler = require('express-async-handler');
 const Product = require('../models/product.models');
 const { fileSizeFormatter } = require('../utils/fileUpload');
 const cloudinary = require('cloudinary').v2;
+const streamifier = require('streamifier');
 
 exports.createProduct = asyncHandler(async (req, res) => {
 	const { name, sku, category, quantity, price, description } = req.body;
@@ -14,17 +15,26 @@ exports.createProduct = asyncHandler(async (req, res) => {
 	let fileData = {};
 
 	if (req.file) {
+		const streamUpload = (req) => {
+			return new Promise((resolve, reject) => {
+				const stream = cloudinary.uploader.upload_stream((error, result) => {
+					if (result) {
+						resolve(result);
+					} else {
+						reject(error);
+					}
+				});
+
+				streamifier.createReadStream(req.file.buffer).pipe(stream);
+			});
+		};
 		let uploadedFile;
 		try {
-			uploadedFile = await cloudinary.uploader.upload(req.file.path, {
-				folder: 'Invetory App',
-				resource_type: 'image',
-			});
+			uploadedFile = await streamUpload(req);
 		} catch (error) {
 			res.status(500);
 			throw new Error('Image could not be uploaded');
 		}
-
 		fileData = {
 			fileName: req.file.originalname,
 			filePath: uploadedFile.secure_url,
