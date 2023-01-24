@@ -45,30 +45,30 @@ npm start
 
 ### Users
 
-| **Description**  | **Method** | **URL**                              |
-| :--------------: | :--------: | ------------------------------------ |
-|     Register     |    POST    | /api/user/register                   |
-|      Login       |    POST    | /api/user/login                      |
-|      Logout      |    GET     | /api/user/logout                     |
-|   Get profile    |    GET     | /api/user/profile                    |
-| Logged in status |    GET     | /api/user/loggedin                   |
-|  Update profile  |   PATCH    | /api/user/update-profile             |
-| Update password  |   PATCH    | /api/user/update-password            |
-| Forgot password  |    POST    | /api/user/forgot-password            |
-|  Reset password  |    PUT     | /api/user/reset-password/:resetToken |
+| **Description** | **Method** | **URL**                              |
+| --------------- | :--------: | ------------------------------------ |
+| Register        |    POST    | /api/user/register                   |
+| Login           |    POST    | /api/user/login                      |
+| Logout          |    GET     | /api/user/logout                     |
+| Get profile     |    GET     | /api/user/profile                    |
+| Login status    |    GET     | /api/user/loggedin                   |
+| Update profile  |   PATCH    | /api/user/update-profile             |
+| Update password |   PATCH    | /api/user/update-password            |
+| Forgot password |    POST    | /api/user/forgot-password            |
+| Reset password  |    PUT     | /api/user/reset-password/:resetToken |
 
 ### Items
 
 | **Description** | **Method** | **URL**           |
-| --------------- | ---------- | ----------------- |
-| Add item        | POST       | /api/products     |
-| Get all items   | GET        | /api/products     |
-| Get single item | GET        | /api/products/:id |
-| Delete item     | DELETE     | /api/products/:id |
-| Update item     | PATCH      | /api/products/:id |
+| --------------- | :--------: | ----------------- |
+| Add item        |    POST    | /api/products     |
+| Get all items   |    GET     | /api/products     |
+| Get single item |    GET     | /api/products/:id |
+| Delete item     |   DELETE   | /api/products/:id |
+| Update item     |   PATCH    | /api/products/:id |
 
 ### Contact
 
 | **Description**      | **Method** | **URL**      |
-| -------------------- | ---------- | ------------ |
-| Send contact message | POST       | /api/contact |
+| -------------------- | :--------: | ------------ |
+| Send contact message |    POST    | /api/contact |
